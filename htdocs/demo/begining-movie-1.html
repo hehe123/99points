@@ -257,6 +257,8 @@
 				aPocker = [],
 				ran = m.random,
 				floor = m.floor,
+				pockerPoint = [(800 - pw) / 2 - 100, (480 - ph) / 2 + 10],
+				pockerZhi = [],
 				pockermap = {};
 			canvasdesk.width = W;
 			canvasdesk.height = H;
@@ -269,6 +271,23 @@
 					ctx.drawPokerBack(cl - i, ct - i - 1 , ph, '#535550', '#90928C');
 				}
 			}
+			
+			~function randomPockerFirst(){
+				var i = 0,
+					len = 200,
+					_arr = [],
+					_len;
+				for(i in pockermap){
+					if(i !== 'xb'){
+						_arr.push(i);
+					}
+				}
+				_len = _arr.length - 1;	
+				for(i = 0; i < len; i++){
+					pockerZhi.push(_arr[floor(ran() * _len)]);
+				}
+			}();
+			
 			~function begining(){
 				var arr = [], end = false;
 				function adds(opt){
@@ -335,7 +354,10 @@
 						arr.push({
 							fn : function(_i, _j){
 								var _this = a[_i][_j],
-									A = objMove([[cl, _this.l], [ct, _this.t], [0, _this.d]], null, _i === lenN - 1 && _j === a[0].length - 1 ? function(){
+									isMy = _i == 0,
+									pockers = aPocker[_i * 10 + _j],
+									arrm =  isMy? [[pockerPoint[0], _this.l - 70 + j * 30], [pockerPoint[1] + 30, _this.t - 10], [pw, pw * 1.2], [ph, ph * 1.2]] : [[cl, _this.l], [ct, _this.t], [0, _this.d]],
+									A = objMove(arrm, null, _i === lenN - 1 && _j === a[0].length - 1 ? function(){
 										timer.delFn('begining-movie');
 										canvasdesk.getContext('2d').drawImage(canvas, 0, 0, W, H);
 										_end = true;
@@ -343,11 +365,15 @@
 								return function(){
 									var _a = A(),
 										_dec = _a[2] * pi / 180;
-									ctx.save();
-									ctx.translate(_a[0], _a[1]);
-									ctx.rotate(_dec);
-									ctx.drawImage(pockermap['xb'], 0 , 0, pw, ph);
-									ctx.restore();
+									if(isMy){
+										ctx.drawImage(isMy ? pockermap['h4'] : pockermap['xb'], _a[0] , _a[1], _a[2], _a[3]);
+									}else{
+										ctx.save();
+										ctx.translate(_a[0], _a[1]);
+										ctx.rotate(_dec);
+										ctx.drawImage(isMy ? pockermap['h4'] : pockermap['xb'], 0 , 0, pw, ph);
+										ctx.restore();
+									}
 								};
 							}(i, j),
 							idx : z
@@ -367,16 +393,18 @@
 					}, 4);
 				}
 				
+				
+				
+				pushSiteDate(375, 325);
+				pushSiteDate(205, 325);
+				pushSiteDate(135, 280);
+				pushSiteDate(135, 175);
 				pushSiteDate(205, 125);
 				pushSiteDate(375, 125);
 				pushSiteDate(555, 125);
 				pushSiteDate(635, 175);
 				pushSiteDate(635, 280);
 				pushSiteDate(555, 325);
-				pushSiteDate(375, 325);
-				pushSiteDate(205, 325);
-				pushSiteDate(135, 280);
-				pushSiteDate(135, 175);
 				//drawDeskTop();
 				//noSend();
 				
@@ -484,7 +512,7 @@
 								Pdesk.push({
 									l : L,
 									t : 305
-								});
+								})
 								L += 30;
 								dk = true;
 								A1 = objMove([[cl, that.l], [ct, that.t], [0, that.d]], null, function(){
@@ -494,7 +522,7 @@
 									}else{
 										ok = false;
 									}
-								}, 400);
+								}, 400)
 							}, 300),
 							cl = (800 - pw) / 2 - 60,
 							ct = (480 - ph) / 2 + 5,
